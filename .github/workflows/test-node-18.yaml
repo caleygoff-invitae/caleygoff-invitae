@@ -1,0 +1,24 @@
+name: On Push to Remote Workflow
+run-name: On Push to Remote Workflow - sequence-frontend
+on:
+  push:
+    branches:
+      - 'master'
+      - 'main'
+jobs:
+  init:
+    name: test install node-18
+    runs-on: ['self-hosted', 'env:dev-test', 'os:amazon-linux', 'release:2023']
+    steps:
+      - uses: invitae-internal/utils-action@v1
+        with:
+          name: cleanup
+      - run: |
+          echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+          sudo sysctl -p
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: '18.17.0'
+      - name: Type check
+        run: npm version; node --version
